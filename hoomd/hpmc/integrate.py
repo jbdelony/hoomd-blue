@@ -107,7 +107,7 @@ class HPMCIntegrator(BaseIntegrator):
 
     .. rubric:: Attributes
     """
-
+    _remove_for_pickling = BaseIntegrator._remove_for_pickling + ('_cpp_cell',)
     _cpp_cls = None
 
     def __init__(self, seed, d, a, translation_move_probability, nselect):
