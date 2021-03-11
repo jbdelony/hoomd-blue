@@ -1,259 +1,350 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.9 FATAL_ERROR)
-# >= 3.8 is required for CUDA language support
-# >= 3.9 is required for MPI::MPI_CXX target
+# Maintainer: joaander
 
-project (HOOMD LANGUAGES C CXX)
+set(_md_sources module-md.cc
+                   ActiveForceCompute.cc
+                   BondTablePotential.cc
+                   CommunicatorGrid.cc
+                   ComputeThermo.cc
+                   ComputeThermoHMA.cc
+                   ConstExternalFieldDipoleForceCompute.cc
+                   ConstraintEllipsoid.cc
+                   ConstraintSphere.cc
+                   CosineSqAngleForceCompute.cc
+                   OneDConstraint.cc
+                   Enforce2DUpdater.cc
+                   FIREEnergyMinimizer.cc
+                   ForceComposite.cc
+                   ForceDistanceConstraint.cc
+                   HarmonicAngleForceCompute.cc
+                   HarmonicDihedralForceCompute.cc
+                   HarmonicImproperForceCompute.cc
+                   IntegrationMethodTwoStep.cc
+                   IntegratorTwoStep.cc
+                   MolecularForceCompute.cc
+                   NeighborListBinned.cc
+                   NeighborList.cc
+                   NeighborListStencil.cc
+                   NeighborListTree.cc
+                   OPLSDihedralForceCompute.cc
+                   PPPMForceCompute.cc
+                   TableAngleForceCompute.cc
+                   TableDihedralForceCompute.cc
+                   TablePotential.cc
+                   TempRescaleUpdater.cc
+                   TwoStepBD.cc
+                   TwoStepBerendsen.cc
+                   TwoStepLangevinBase.cc
+                   TwoStepLangevin.cc
+                   TwoStepNPTMTK.cc
+                   TwoStepNVE.cc
+                   TwoStepNVTMTK.cc
+                   ZeroMomentumUpdater.cc
+                   MuellerPlatheFlow.cc
+                   )
 
-# enlble compile_commands.json output
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(_md_headers ActiveForceComputeGPU.h
+                ActiveForceCompute.h
+                AllAnisoPairPotentials.h
+                AllBondPotentials.h
+                AllExternalPotentials.h
+                AllPairPotentials.h
+                AllSpecialPairPotentials.h
+                AllTripletPotentials.h
+                AnisoPotentialPairGPU.cuh
+                AnisoPotentialPairGPU.h
+                AnisoPotentialPair.h
+                BondTablePotentialGPU.h
+                BondTablePotential.h
+                CommunicatorGridGPU.h
+                CommunicatorGrid.h
+                ComputeThermoGPU.cuh
+                ComputeThermoGPU.h
+                ComputeThermoHMAGPU.cuh
+                ComputeThermoHMAGPU.h
+                ComputeThermo.h
+                ComputeThermoHMA.h
+                ComputeThermoTypes.h
+                ComputeThermoHMATypes.h
+                ConstExternalFieldDipoleForceCompute.h
+                ConstraintEllipsoidGPU.h
+                ConstraintEllipsoid.h
+                ConstraintSphereGPU.h
+                ConstraintSphere.h
+                CosineSqAngleForceComputeGPU.h
+                CosineSqAngleForceCompute.h
+                Enforce2DUpdaterGPU.h
+                Enforce2DUpdater.h
+                EvaluatorBondFENE.h
+                EvaluatorBondHarmonic.h
+                EvaluatorSpecialPairLJ.h
+                EvaluatorSpecialPairCoulomb.h
+                EvaluatorConstraintEllipsoid.h
+                EvaluatorConstraint.h
+                EvaluatorConstraintSphere.h
+                EvaluatorExternalElectricField.h
+                EvaluatorExternalPeriodic.h
+                EvaluatorPairBuckingham.h
+                EvaluatorPairDipole.h
+                EvaluatorPairDPDLJThermo.h
+                EvaluatorPairDPDThermo.h
+                EvaluatorPairEwald.h
+                EvaluatorPairForceShiftedLJ.h
+                EvaluatorPairGauss.h
+                EvaluatorPairGB.h
+                EvaluatorPairLJ.h
+                EvaluatorPairLJ1208.h
+		EvaluatorPairLJ0804.h
+                EvaluatorPairMie.h
+                EvaluatorPairMoliere.h
+                EvaluatorPairMorse.h
+                EvaluatorPairOPP.h
+                EvaluatorPairFourier.h
+                EvaluatorPairReactionField.h
+                EvaluatorPairSLJ.h
+                EvaluatorPairTWF.h
+                EvaluatorPairYukawa.h
+                EvaluatorPairZBL.h
+                EvaluatorTersoff.h
+                EvaluatorWalls.h
+                FIREEnergyMinimizerGPU.h
+                FIREEnergyMinimizer.h
+                ForceCompositeGPU.h
+                ForceComposite.h
+                ForceDistanceConstraintGPU.h
+                ForceDistanceConstraint.h
+                HarmonicAngleForceComputeGPU.h
+                HarmonicAngleForceCompute.h
+                HarmonicDihedralForceComputeGPU.h
+                HarmonicDihedralForceCompute.h
+                HarmonicImproperForceComputeGPU.h
+                HarmonicImproperForceCompute.h
+                IntegrationMethodTwoStep.h
+                IntegratorTwoStep.h
+                MolecularForceCompute.cuh
+                MolecularForceCompute.h
+                NeighborListBinned.h
+                NeighborListGPUBinned.h
+                NeighborListGPU.h
+                NeighborListGPUStencil.h
+                NeighborListGPUTree.h
+                NeighborList.h
+                NeighborListStencil.h
+                NeighborListTree.h
+                OPLSDihedralForceComputeGPU.h
+                OPLSDihedralForceCompute.h
+                PotentialBondGPU.h
+                PotentialBondGPU.cuh
+                PotentialBond.h
+                PotentialExternalGPU.h
+                PotentialExternalGPU.cuh
+                PotentialExternal.h
+                PotentialPairDPDThermoGPU.h
+                PotentialPairDPDThermoGPU.cuh
+                PotentialPairDPDThermo.h
+                PotentialPairGPU.h
+                PotentialPairGPU.cuh
+                PotentialPair.h
+                PotentialSpecialPairGPU.h
+                PotentialSpecialPair.h
+                PotentialTersoffGPU.h
+                PotentialTersoff.h
+                PPPMForceComputeGPU.h
+                PPPMForceCompute.h
+                QuaternionMath.h
+                TableAngleForceComputeGPU.h
+                TableAngleForceCompute.h
+                TableDihedralForceComputeGPU.h
+                TableDihedralForceCompute.h
+                TablePotentialGPU.h
+                TablePotential.h
+                TempRescaleUpdater.h
+                TwoStepBDGPU.h
+                TwoStepBD.h
+                TwoStepBerendsenGPU.h
+                TwoStepBerendsen.h
+                TwoStepLangevinBase.h
+                TwoStepLangevinGPU.h
+                TwoStepLangevin.h
+                TwoStepNPTMTKGPU.h
+                TwoStepNPTMTK.h
+                TwoStepNVEGPU.h
+                TwoStepNVE.h
+                TwoStepNVTMTKGPU.h
+                TwoStepNVTMTK.h
+                WallData.h
+                ZeroMomentumUpdater.h
+                )
 
-include(GNUInstallDirs)
-
-# bring in custom modules
-add_subdirectory (CMake)
-
-################################
-## Version information
-set(HOOMD_VERSION_RAW "3.0.0-beta.4")
-string(REGEX MATCH "(.*)\\.(.*)\\.(.*)$" _hoomd_version_match ${HOOMD_VERSION_RAW})
-set(HOOMD_VERSION_MAJOR ${CMAKE_MATCH_1})
-set(HOOMD_VERSION_MINOR ${CMAKE_MATCH_2})
-set(HOOMD_VERSION_PATCH ${CMAKE_MATCH_3})
-set(HOOMD_VERSION "${HOOMD_VERSION_MAJOR}.${HOOMD_VERSION_MINOR}.${HOOMD_VERSION_PATCH}")
-
-# users may not have git installed, or this may be a tarball build - set a dummy version if that is the case
-include(GetGitRevisionDescription)
-git_describe(HOOMD_GIT_VERSION)
-if (HOOMD_GIT_VERSION)
-    set(HOOMD_VERSION_LONG "${HOOMD_GIT_VERSION}")
-else (HOOMD_GIT_VERSION)
-    set(HOOMD_VERSION_LONG "${HOOMD_VERSION}")
-endif (HOOMD_GIT_VERSION)
-
-get_git_head_revision(GIT_REFSPEC GIT_SHA1)
-if (GIT_REFSPEC)
-    set(HOOMD_GIT_REFSPEC "${GIT_REFSPEC}")
-else (GIT_REFSPEC)
-    set(HOOMD_GIT_REFSPEC "${HOOMD_VERSION_RAW}")
-endif (GIT_REFSPEC)
-
-if (GIT_SHA1)
-    set(HOOMD_GIT_SHA1 "${GIT_SHA1}")
-else (GIT_SHA1)
-    set(HOOMD_GIT_SHA1 "unknown")
-endif (GIT_SHA1)
-
-message(STATUS "Configuring HOOMD ${HOOMD_VERSION_LONG}")
-
-#################################
-## CFLAGS configuration
-
-# Set a default build type if none was specified
-if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-  message(STATUS "Setting build type to 'Release' as none was specified.")
-  set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
-  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release"
-    "MinSizeRel" "RelWithDebInfo")
+if (ENABLE_HIP)
+list(APPEND _md_sources ActiveForceComputeGPU.cc
+                           BondTablePotentialGPU.cc
+                           CommunicatorGridGPU.cc
+                           ComputeThermoGPU.cc
+                           ComputeThermoHMAGPU.cc
+                           ConstraintEllipsoidGPU.cc
+                           ConstraintSphereGPU.cc
+                           OneDConstraintGPU.cc
+                           Enforce2DUpdaterGPU.cc
+                           FIREEnergyMinimizerGPU.cc
+                           ForceCompositeGPU.cc
+                           ForceDistanceConstraintGPU.cc
+                           HarmonicAngleForceComputeGPU.cc
+                           HarmonicDihedralForceComputeGPU.cc
+                           HarmonicImproperForceComputeGPU.cc
+                           MolecularForceCompute.cu
+                           NeighborListGPU.cc
+                           NeighborListGPUBinned.cc
+                           NeighborListGPUStencil.cc
+                           NeighborListGPUTree.cc
+                           OPLSDihedralForceComputeGPU.cc
+                           PPPMForceComputeGPU.cc
+                           TableAngleForceComputeGPU.cc
+                           TableDihedralForceComputeGPU.cc
+                           TablePotentialGPU.cc
+                           TwoStepBDGPU.cc
+                           TwoStepBerendsenGPU.cc
+                           TwoStepLangevinGPU.cc
+                           TwoStepNPTMTKGPU.cc
+                           TwoStepNVEGPU.cc
+                           TwoStepNVTMTKGPU.cc
+                           MuellerPlatheFlowGPU.cc
+                           CosineSqAngleForceComputeGPU.cc
+                           )
 endif()
 
-# enable c++14
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CUDA_STANDARD 14)
+set(_md_cu_sources ActiveForceComputeGPU.cu
+                      AllDriverAnisoPotentialPairGPU.cu
+                      AllDriverPotentialBondGPU.cu
+                      AllDriverPotentialSpecialPairGPU.cu
+                      BuckinghamDriverPotentialPairGPU.cu
+                      ComputeThermoGPU.cu
+                      ComputeThermoHMAGPU.cu
+                      DLVODriverPotentialPairGPU.cu
+                      DPDLJThermoDriverPotentialPairGPU.cu
+                      DPDThermoDriverPotentialPairGPU.cu
+                      EwaldDriverPotentialPairGPU.cu
+                      ForceShiftedLJDriverPotentialPairGPU.cu
+                      GaussDriverPotentialPairGPU.cu
+                      LJDriverPotentialPairGPU.cu
+                      MieDriverPotentialPairGPU.cu
+                      MoliereDriverPotentialPairGPU.cu
+                      MorseDriverPotentialPairGPU.cu
+                      OPPDriverPotentialPairGPU.cu
+                      TWFDriverPotentialPairGPU.cu
+                      FourierDriverPotentialPairGPU.cu
+                      PairLJ1208DriverPotentialPairGPU.cu
+		      PairLJ0804DriverPotentialPairGPU.cu
+                      ReactionFieldDriverPotentialPairGPU.cu
+                      SLJDriverPotentialPairGPU.cu
+                      YukawaDriverPotentialPairGPU.cu
+                      ZBLDriverPotentialPairGPU.cu
+                      BondTablePotentialGPU.cu
+                      CommunicatorGridGPU.cu
+                      ConstraintEllipsoidGPU.cu
+                      ConstraintSphereGPU.cu
+                      OneDConstraintGPU.cu
+                      DriverTersoffGPU.cu
+                      Enforce2DUpdaterGPU.cu
+                      FIREEnergyMinimizerGPU.cu
+                      ForceCompositeGPU.cu
+                      ForceDistanceConstraintGPU.cu
+                      HarmonicAngleForceGPU.cu
+                      HarmonicDihedralForceGPU.cu
+                      HarmonicImproperForceGPU.cu
+                      MolecularForceCompute.cu
+                      NeighborListGPUBinned.cu
+                      NeighborListGPU.cu
+                      NeighborListGPUStencil.cu
+                      NeighborListGPUTree.cu
+                      OPLSDihedralForceGPU.cu
+                      PotentialExternalGPU.cu
+                      PPPMForceComputeGPU.cu
+                      TableAngleForceGPU.cu
+                      TableDihedralForceGPU.cu
+                      TablePotentialGPU.cu
+                      TwoStepBDGPU.cu
+                      TwoStepBerendsenGPU.cu
+                      TwoStepLangevinGPU.cu
+                      TwoStepNPTMTKGPU.cu
+                      TwoStepNVEGPU.cu
+                      TwoStepNVTMTKGPU.cu
+                      MuellerPlatheFlowGPU.cu
+                      CosineSqAngleForceGPU.cu
+                      )
 
-# Enable compiler warnings on gcc and clang (common compilers used by developers)
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wconversion -Wno-sign-conversion -Wno-unknown-pragmas -Wno-deprecated-declarations")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
-endif()
+if (ENABLE_HIP)
+set(_cuda_sources ${_md_cu_sources} ${DFFT_CU_SOURCES})
+endif (ENABLE_HIP)
 
-# Enable color output from compiler
-if (CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.0)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdiagnostics-color=always")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fdiagnostics-color=always")
-endif()
+pybind11_add_module(_md SHARED ${_md_sources} ${_cuda_sources} ${DFFT_SOURCES} ${_md_headers} NO_EXTRAS)
+# alias into the HOOMD namespace so that plugins and symlinked components both work
+add_library(HOOMD::_md ALIAS _md)
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fcolor-diagnostics")
-endif()
-
-#################################
-## Build options
-option(SINGLE_PRECISION "Use single precision math" OFF)
-OPTION(ENABLE_GPU "True if we are compiling for a GPU target" FALSE)
-SET(ENABLE_HIP ${ENABLE_GPU})
-
-option(ENABLE_HPMC_MIXED_PRECISION "Enable mixed precision computations in HPMC" ON)
-
-# Optionally enable documentation build
-OPTION(ENABLE_DOXYGEN "Enables building of documentation with doxygen" OFF)
-if (ENABLE_DOXYGEN)
-    find_package(Doxygen)
-    if (DOXYGEN_FOUND)
-        # get the doxygen version
-        exec_program(${DOXYGEN_EXECUTABLE} ${HOOMD_SOURCE_DIR} ARGS --version OUTPUT_VARIABLE DOXYGEN_VERSION)
-
-        if (${DOXYGEN_VERSION} VERSION_GREATER 1.8.4)
-        else (${DOXYGEN_VERSION} VERSION_GREATER 1.8.4)
-            message(STATUS "Doxygen version less than 1.8.5, documentation may not build correctly")
-        endif (${DOXYGEN_VERSION} VERSION_GREATER 1.8.4)
-    endif ()
-endif ()
-
-# Components
-option(BUILD_MD "Build the md package" on)
-if (NOT SINGLE_PRECISION)
-option(BUILD_HPMC "Build the hpmc package" on)
-else ()
-option(BUILD_HPMC "Build the hpmc package" off)
-endif()
-option(BUILD_METAL "Build the metal package" on)
-option(BUILD_DEM "Build the dem package" on)
-option(BUILD_JIT "Build the jit package" off)
-
-# Optionally use TBB for threading
-option(ENABLE_TBB "Enable support for Threading Building Blocks (TBB)" off)
-
-# Add list of plugins
-set(PLUGINS "example_plugin;" CACHE STRING "List of plugin directories.")
-
-# this needs to go before CUDA setup
-include (HOOMDHIPSetup)
-
-# Find CUDA and set it up
-include (HOOMDCUDASetup)
-include (hoomd-macros)
-
-# setup MPI support
-include (HOOMDMPISetup)
-# find the python libraries to link to
-include(HOOMDPythonSetup)
-
-if (NOT ENABLE_HIP OR HIP_PLATFORM STREQUAL "nvcc")
-    option(BUILD_MPCD "Build the mpcd package" on)
+if(APPLE)
+set_target_properties(_md PROPERTIES INSTALL_RPATH "@loader_path/..;@loader_path")
 else()
-    option(BUILD_MPCD "Build the mpcd package" off)
+set_target_properties(_md PROPERTIES INSTALL_RPATH "\$ORIGIN/..;\$ORIGIN")
 endif()
 
-find_package(Eigen3 3.2 CONFIG REQUIRED)
-if (Eigen3_FOUND)
-    find_package_message(EIGEN3 "Found eigen: ${Eigen3_DIR} ${EIGEN3_INCLUDE_DIR} (version ${Eigen3_VERSION})" "[${Eigen3_DIR}][${EIGEN3_INCLUDE_DIR}]")
+# link the library to its dependencies
+if (CUSOLVER_AVAILABLE)
+    # CUDA 8.0 requires that we link in gomp
+    target_link_libraries(_md PUBLIC _hoomd CUDA::cusolver CUDA::cusparse gomp)
+else()
+    target_link_libraries(_md PUBLIC _hoomd)
+endif()
+if (ENABLE_HIP)
+    target_link_libraries(_md PRIVATE neighbor)
 endif()
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/hoomd/extern/libgetar)
+fix_cudart_rpath(_md)
 
-#########################################
-# Check for submodules
-if (
-    NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/hoomd/extern/cub/cub/cub.cuh OR
-    NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/hoomd/extern/nano-signal-slot/nano_signal_slot.hpp OR
-    NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/hoomd/extern/upp11/upp11.h OR
-    NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/hoomd/extern/HIP/include/hip/hip_runtime.h OR
-    NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/hoomd/extern/quickhull/ConvexHull.hpp OR
-    NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/hoomd/extern/random123/include/Random123/philox.h OR
-    NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/hoomd/extern/neighbor/include/neighbor/neighbor.h OR
-    NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/hoomd/extern/hipper/include/hipper/hipper_runtime.h
+# install the library
+install(TARGETS _md EXPORT HOOMDTargets
+        LIBRARY DESTINATION ${PYTHON_SITE_INSTALL_DIR}/md
+        )
+
+################ Python only modules
+# copy python modules to the build directory to make it a working python package
+set(files __init__.py
+          angle.py
+          bond.py
+          charge.py
+          compute.py
+          constrain.py
+          dihedral.py
+          external.py
+          force.py
+          improper.py
+          integrate.py
+          many_body.py
+          methods.py
+          nlist.py
+          update.py
+          wall.py
+          special_pair.py
     )
 
-    if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.git)
-        # appropriate message for a git repository
-        message(FATAL_ERROR "Submodules not found. Execute `git submodule update --init`. "
-                            "in the source directory to provide them, or clone with the --recursive option.")
-    else()
-        # appropriate message for a tarball checkout
-        message(FATAL_ERROR "Submodules not found. This is not a git clone. You can either use git to clone hoomd "
-                            "or you can manually download all the required submodules and extract them in the proper "
-                            "location in `hoomd/extern`. See the file .gitmodules for a list of all submodules "
-                            "and the hoomd git repository submodule references for which commits of these repositories "
-                            "must be provided.")
-    endif()
+install(FILES ${files}
+        DESTINATION ${PYTHON_SITE_INSTALL_DIR}/md
+       )
+
+copy_files_to_build("${files}" "md" "*.py")
+
+# install headers in installation target
+install(FILES ${_md_headers}
+        DESTINATION ${PYTHON_SITE_INSTALL_DIR}/include/hoomd/md
+       )
+
+add_subdirectory(pair)
+
+if (BUILD_TESTING)
+    # add_subdirectory(test-py)
+    add_subdirectory(test)
 endif()
 
-find_package(libgetar)
+add_subdirectory(pytest)
 
-if (libgetar_DIR)
-  set(LIBGETAR_SHARED TRUE)
-  add_subdirectory(${libgetar_DIR} EXCLUDE_FROM_ALL)
-else (libgetar_DIR)
-  message(FATAL_ERROR "Libgetar was not found in hoomd/extern/libgetar. Please "
-                      "pull the libgetar source, i.e. via `git submodule update`.")
-endif (libgetar_DIR)
-
-#######################
-## Get the compile date
-exec_program("date +%Y-%m-%d" OUTPUT_VARIABLE COMPILE_DATE)
-
-################################
-# set up unit tests
-enable_testing()
-option(BUILD_TESTING "Build unit tests" ON)
-
-################################
-# set up long validation tests
-option(BUILD_VALIDATION "Build validation tests" OFF)
-if (BUILD_TESTING OR BUILD_VALIDATION)
-     # add test_all to the ALL target
-     add_custom_target(test_all ALL)
-endif (BUILD_TESTING OR BUILD_VALIDATION)
-
-# In jenkins tests on multiple build configurations, it is wasteful to run CPU tests on CPU and all GPU test paths
-# this option turns off CPU only tests in builds with ENABLE_HIP=ON
-option(TEST_CPU_IN_GPU_BUILDS "Test CPU code path in GPU enabled builds" on)
-mark_as_advanced(TEST_CPU_IN_GPU_BUILDS)
-if (NOT TEST_CPU_IN_GPU_BUILDS AND ENABLE_HIP)
-    message(STATUS "Warning: Skipping CPU tests")
+if (BUILD_VALIDATION)
+    # add_subdirectory(validation)
 endif()
-
-################################
-## Process subdirectories
-add_subdirectory (hoomd)
-
-###############################
-## include documentation directories
-if (ENABLE_DOXYGEN)
-    add_subdirectory (doc)
-endif (ENABLE_DOXYGEN)
-
-###############################
-## install cmake config files
-
-include(CMakePackageConfigHelpers)
-
-# version information
-write_basic_package_version_file(
-  ${CMAKE_CURRENT_BINARY_DIR}/hoomd-config-version.cmake
-  VERSION ${HOOMD_VERSION}
-  COMPATIBILITY SameMajorVersion)
-
-# exports
-export(EXPORT HOOMDTargets
-       NAMESPACE "HOOMD::"
-       FILE "${CMAKE_CURRENT_BINARY_DIR}/hoomd-targets.cmake")
-
-set(CONFIG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/hoomd")
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/hoomd-config-version.cmake
-        DESTINATION ${CONFIG_INSTALL_DIR})
-
-install(EXPORT HOOMDTargets
-  NAMESPACE "HOOMD::"
-  FILE hoomd-targets.cmake
-  DESTINATION ${CONFIG_INSTALL_DIR})
-
-configure_package_config_file(hoomd-config.cmake.in
-  ${CMAKE_CURRENT_BINARY_DIR}/hoomd-config.cmake
-  INSTALL_DESTINATION ${CONFIG_INSTALL_DIR}
-  PATH_VARS CMAKE_INSTALL_PREFIX)
-
-install(FILES CMake/hoomd/FindTBB.cmake
-              CMake/hoomd/FindCUDALibs.cmake
-              CMake/HIP/FindHIP.cmake
-              CMake/hoomd/HOOMDHIPSetup.cmake
-              CMake/hoomd/hipcc.cmake
-              CMake/hoomd/hoomd-macros.cmake
-              ${HOOMD_BINARY_DIR}/hoomd-config.cmake
-        DESTINATION ${CONFIG_INSTALL_DIR})
-
-install(FILES CMake/HIP/FindHIP/run_hipcc.cmake
-              CMake/HIP/FindHIP/run_make2cmake.cmake
-        DESTINATION ${CONFIG_INSTALL_DIR}/FindHIP)
