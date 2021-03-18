@@ -118,23 +118,23 @@ class EvaluatorPairLJ0804
                 {
                 auto sigma(v["sigma"].cast<Scalar>());
                 auto epsilon(v["epsilon"].cast<Scalar>());
-                lj1 = 4.0 * epsilon * fast::pow(sigma, 8.0);
-                lj2 = 4.0 * epsilon * fast::pow(sigma, 4.0);
+                lj1 = epsilon * fast::pow(sigma, 8.0);
+                lj2 = 2.0 * epsilon * fast::pow(sigma, 4.0);
                 }
 
             // this constructor facilitates unit testing
             param_type(Scalar sigma, Scalar epsilon)
                 {
-                lj1 = 4.0 * epsilon * fast::pow(sigma, 8.0);
-                lj2 = 4.0 * epsilon * fast::pow(sigma, 4.0);
+                lj1 = epsilon * fast::pow(sigma, 8.0);
+                lj2 = 2.0 * epsilon * fast::pow(sigma, 4.0);
                 }
 
             pybind11::dict asDict()
                 {
                 pybind11::dict v;
-                auto sigma4 = lj1 / lj2;
+                auto sigma4 = 2.0 * (lj1 / lj2);
                 v["sigma"] = fast::rsqrt(fast::rsqrt(sigma4));
-                v["epsilon"] = lj2 / (sigma4 * 4);
+                v["epsilon"] = lj2 / (sigma4 * 2.0);
                 return v;
                 }
             #endif
@@ -190,15 +190,15 @@ class EvaluatorPairLJ0804
                 {
                 Scalar r2inv = Scalar(1.0)/rsq;
 		Scalar r4inv = r2inv * r2inv;
-                force_divr= r2inv * r4inv * (Scalar(8.0)*lj1*r4inv - Scalar(4.0)*lj2);
+                force_divr= r2inv * r4inv * (Scalar(8.0) * lj1 * r4inv - Scalar(4.0) * lj2);
 
-                pair_eng = r4inv * (lj1*r4inv - lj2);
+                pair_eng = r4inv * (lj1 * r4inv - lj2);
 
                 if (energy_shift)
                     {
-                    Scalar rcut2inv = Scalar(1.0)/rcutsq;
+                    Scalar rcut2inv = Scalar(1.0) / rcutsq;
                     Scalar rcut4inv = rcut2inv * rcut2inv;
-                    pair_eng -= rcut4inv * (lj1*rcut4inv - lj2);
+                    pair_eng -= rcut4inv * (lj1 * rcut4inv - lj2);
                     }
                 return true;
                 }
